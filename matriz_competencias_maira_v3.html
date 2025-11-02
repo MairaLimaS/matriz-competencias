@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Matriz de Competências — Layout em Cartões (Tema Claro)</title>
+<style>
+  :root{
+    --bg:#ffffff;
+    --paper:#ffffff;
+    --ink:#1f2937;
+    --muted:#4b5563;
+    --line:#e5e7eb;
+    --chip:#f3f4f6;
+    --chipOn:#e5f2ff;
+    --shadow:0 6px 20px rgba(17,24,39,.08);
+    --green:#16a34a;
+    --blue:#2563eb;
+    --purple:#7c3aed;
+    --gold:#d97706;
+    --magenta:#db2777;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,Segoe UI,Roboto,system-ui,-apple-system,sans-serif}
+  header{padding:28px 24px 8px;max-width:1200px;margin:0 auto}
+  h1{font-size:28px;margin:0 0 6px;letter-spacing:.2px}
+  .sub{color:var(--muted);font-size:14px}
+  .bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:18px}
+  .pill{background:var(--chip);border:1px solid var(--line);color:var(--ink);padding:8px 12px;border-radius:999px;cursor:pointer;font-size:13px}
+  .pill.active{background:var(--chipOn);border-color:#bcdcff}
+  .legend{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px;font-size:12px;color:var(--muted)}
+  .legend span{display:inline-flex;align-items:center;gap:6px;padding:4px 8px;background:var(--chip);border:1px solid var(--line);border-radius:999px}
+  .lvl{width:10px;height:10px;border-radius:50%}
+  .hint{font-size:12px;color:var(--muted);margin-top:6px}
+  .tools{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+  button{all:unset;padding:9px 14px;border-radius:10px;background:#f3f4f6;border:1px solid var(--line);color:var(--ink);font-size:13px;cursor:pointer}
+  button:hover{background:#eef2ff}
+  .search{flex:1;min-width:220px;background:white;border:1px solid var(--line);border-radius:10px;padding:10px 12px;color:var(--ink)}
+  .grid{max-width:1200px;margin:16px auto 120px;padding:0 24px;display:grid;grid-template-columns:repeat(12,1fr);gap:16px}
+  .card{grid-column:span 12;background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:18px;box-shadow:var(--shadow)}
+  @media(min-width:760px){ .card{grid-column:span 6} }
+  @media(min-width:1080px){ .card{grid-column:span 4} }
+  .axisTag{display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:12px;letter-spacing:.3px;padding:6px 10px;border-radius:999px;margin-bottom:10px;border:1px solid var(--line);background:var(--chip)}
+  .axisDot{width:10px;height:10px;border-radius:50%}
+  .title{font-size:16px;font-weight:700;margin:6px 0 8px}
+  .evidence{color:var(--muted);font-size:13px;line-height:1.45}
+  .row{display:flex;align-items:center;gap:12px;margin-top:12px}
+  .badge{font-size:12px;padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:var(--chip);color:var(--ink)}
+  .meter{position:relative;height:10px;background:#f3f4f6;border:1px solid var(--line);border-radius:999px;overflow:hidden;flex:1}
+  .fill{position:absolute;left:0;top:0;bottom:0}
+  footer{position:fixed;bottom:12px;left:0;right:0;display:flex;justify-content:center;pointer-events:none}
+  .footerInner{pointer-events:auto;background:rgba(255,255,255,.9);backdrop-filter:saturate(1.2) blur(6px);border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;gap:8px;flex-wrap:wrap;box-shadow:var(--shadow)}
+
+  /* --- Dark header band to match the screenshot --- */
+  .headerDark{
+    background:linear-gradient(180deg,#0b0d12,#0f1115 60%);
+    color:#e8ecf1;
+  }
+  .headerDark h1{color:#e8ecf1}
+  .headerDark .sub{color:#b7c3d9}
+  .headerDark .pill{
+    background:#1e2a40;
+    border:1px solid #2a3b5f;
+    color:#e8ecf1;
+    box-shadow:0 6px 18px rgba(0,0,0,.25);
+  }
+  .headerDark .pill.active{background:#2a3b5f;border-color:#3a4a74}
+  .headerDark .legend span{
+    background:#1e2435;
+    border:1px solid #2a3552;
+    color:#d9e2ff;
+  }
+  .headerDark .lvl{box-shadow:0 0 0 2px rgba(255,255,255,.06) inset}
+  .headerDark .hint{color:#c2cbe0}
+  .headerDark .pin{
+    margin-top:10px;
+    color:#d6def1;
+    display:flex; align-items:center; gap:8px;
+  }
+</style>
+</head>
+<body>
+<header class="headerDark">
+  <h1>Matriz de Competências – Política de Dados e Inovação Responsável (v3.0)</h1>
+  <div class="sub">Maíra Lima de Souza · Horizonte 2025–2027 · Especialista em Regulação, Governança e Direitos Digitais</div>
+
+  <div class="bar" id="axisBar"></div>
+
+  <div class="legend" style="margin-top:10px">
+    <span><span class="lvl" style="background:var(--green)"></span>🟩 Avançado</span>
+    <span><span class="lvl" style="background:var(--gold)"></span>🟨 Intermediário</span>
+    <span><span class="lvl" style="background:var(--blue)"></span>🟦 Básico</span>
+    <span><span class="lvl" style="background:#9ca3af"></span>⚪ Em desenvolvimento</span>
+  </div>
+
+  <div class="pin">📌 Esta matriz reflete uma trajetória de 7+ anos em curadoria de dados governamentais, 3+ anos em formulação de políticas de privacidade e 15+ anos em curadoria de dados culturais e comunitários.</div>
+</header>
+
+<div class="grid" id="grid"></div>
+
+<footer>
+  <div class="footerInner">
+    <input id="q" class="search" placeholder="Pesquisar por competência, evidência ou palavra‑chave…" />
+    <button id="reset">Limpar filtros</button>
+    <button id="export">Exportar CSV (recorte visível)</button>
+  </div>
+</footer>
+
+<script>
+const axes = [
+  { id:"E1", name:"Política e Governança de Dados", color:"var(--green)" },
+  { id:"E2", name:"Proteção de Dados e Ética Digital", color:"var(--gold)" },
+  { id:"E3", name:"IA e Regulação Tecnológica", color:"var(--blue)" },
+  { id:"E4", name:"Gestão e Stewardship de Dados", color:"var(--purple)" },
+  { id:"E5", name:"Direitos Humanos e Tecnodiversidade", color:"var(--magenta)" }
+];
+
+const levelMap = {
+  "Avançado": { pct: 1.00, color:"var(--green)", emoji:"🟩" },
+  "Intermediário": { pct: 0.75, color:"var(--gold)", emoji:"🟨" },
+  "Básico": { pct: 0.50, color:"var(--blue)", emoji:"🟦" },
+  "Em desenvolvimento": { pct: 0.25, color:"#9ca3af", emoji:"⚪" }
+};
+
+const items = [
+  { axis:"E1", comp:"Formulação e avaliação de políticas de dados", level:"Avançado", evidence:"Política de Tratamento de Dados SESI; Introduções Gerais de Regulação (AIR, ex post) — ITS 2025.2", evolve:"Consolidar frameworks regionais e setoriais (HealthTech / GovTech)" },
+  { axis:"E1", comp:"Regulação e compliance (LGPD, GDPR, PL 2.338/2023)", level:"Avançado", evidence:"PbD e AIPD Mentis; Introdução à Regulação de IA (PL 2.338/23) — ITS 2025.2; Certificação Data Privacy Brasil (2024)", evolve:"Atuação como consultora e docente especializada" },
+  { axis:"E1", comp:"Avaliação de impacto regulatório (AIR/AIPD)", level:"Avançado", evidence:"Relatórios SESI-SSI; Introduções Gerais de Regulação (AIR) — ITS 2025.2", evolve:"Expansão para programas nacionais de dados em saúde" },
+  { axis:"E1", comp:"Advocacy e articulação interinstitucional", level:"Intermediário", evidence:"Redes ITS/EGD; Estratégias e planos de IA — Introdução à Regulação (ITS 2025.2)", evolve:"Construir comunidade técnica e think-tank aplicado" },
+  { axis:"E2", comp:"Aplicação da LGPD e boas práticas ANPD", level:"Avançado", evidence:"Certificação Data Privacy Brasil (curso 60h 2022; 50h + certificação 2024)", evolve:"Certificação internacional (IAPP/EXIN) e guias práticos" },
+  { axis:"E2", comp:"Ética digital e direitos fundamentais", level:"Intermediário", evidence:"Regulação de IA e Privacidade — ITS 2025.2 (transparência, explicabilidade, inferências)", evolve:"Publicação técnico-acadêmica com estudos de caso" },
+  { axis:"E2", comp:"Governança de privacidade (PbD, DPIA, DPO mindset)", level:"Avançado", evidence:"PbD SESI e Cidacs; ITS 120h Direito Digital e Novas Tecnologias (2024)", evolve:"Mentoria e padronização setorial multi-institucional" },
+  { axis:"E2", comp:"Mitigação de vieses e riscos algorítmicos", level:"Intermediário", evidence:"IA, Direitos Humanos e Tecnodiversidade — ITS 2025.2; Regulação de IA e Privacidade", evolve:"Módulo ético Aurora-BTA e checklists de risco" },
+  { axis:"E2", comp:"Cultura de compliance organizacional", level:"Intermediário", evidence:"Treinamentos internos SESI; Introduções Gerais de Regulação (enforcement responsivo) — ITS 2025.2", evolve:"Programa nacional de capacitação e métricas de cultura" },
+  { axis:"E3", comp:"Fundamentos técnicos e IA generativa", level:"Intermediário", evidence:"IA: Fundamentos técnicos e governança — ITS 2025.2 (modelos generativos, riscos, prompt)", evolve:"Aplicações em análises regulatórias e prototipagem" },
+  { axis:"E3", comp:"Regulação de IA e políticas globais", level:"Avançado", evidence:"Perspectivas Globais de Regulação — ITS 2025.2 (ONU/OCDE/G20; AI Safety; fluxos)", evolve:"Pesquisa aplicada em interoperabilidade regulatória" },
+  { axis:"E3", comp:"Transparência e explicabilidade algorítmica", level:"Intermediário", evidence:"Regulação de IA e Privacidade; Regulação IA e Setor Público (explicabilidade/due process)", evolve:"Guia prático de due process e accountability algorítmica" },
+  { axis:"E3", comp:"Governança de IA no setor público", level:"Intermediário", evidence:"Regulação de IA e Setor Público — ITS 2025.2 (Judiciário, segurança, cidades, sandboxes)", evolve:"Framework nacional de IA responsável (setor público)" },
+  { axis:"E4", comp:"Curadoria e ciclo de vida de dados", level:"Avançado", evidence:"Liderança Cidacs; modelos de curadoria; DAPI/Aurora", evolve:"Framework nacional de stewardship replicável" },
+  { axis:"E4", comp:"Gestão de metadados e interoperabilidade", level:"Avançado", evidence:"Modelos OMOP/OHDSI; dicionários e catálogos; Health Lake SESI (design)", evolve:"Integração com padrões nacionais (saúde e setor público)" },
+  { axis:"E4", comp:"Inventário e classificação de sensibilidade", level:"Avançado", evidence:"Matriz de Sensibilidade; taxonomias LGPD/ANPD; scripts R (classificador)", evolve:"Automação completa e validação contínua por domínio" },
+  { axis:"E4", comp:"Maturidade de governança e accountability", level:"Avançado", evidence:"Radar Aurora DAPI; modelos de avaliação e prestação de contas", evolve:"Modelo replicável SESI/MDS (radar multi-camadas)" },
+  { axis:"E4", comp:"Qualidade, integridade e anonimização", level:"Avançado", evidence:"R + SDCmicro; inspeção/validação; ISO/IEC 20889 (objetivo)", evolve:"Ensaios comparativos e certificação técnica" },
+  { axis:"E5", comp:"Proteção de dados de PCTs e grupos vulneráveis", level:"Avançado", evidence:"Projeto DAPI/Aurora; TCC; cláusulas de salvaguarda; abordagem comparada", evolve:"Publicação de guia normativo com estudos comparados" },
+  { axis:"E5", comp:"Tecnodiversidade e epistemologias do Sul", level:"Intermediário", evidence:"Disciplina ITS (2025.2) e pesquisas correlatas; pluralismo cultural", evolve:"Curso de extensão autoral e frameworks práticos" },
+  { axis:"E5", comp:"Inclusão por design (Inclusion by Design)", level:"Avançado", evidence:"Princípio Aurora; métricas e requisitos; indicadores de inclusão", evolve:"Aurora Index — indicador público de inclusão" },
+  { axis:"E5", comp:"Interseccionalidade e impacto social da IA", level:"Intermediário", evidence:"IA, Direitos Humanos e Tecnodiversidade; análises de impacto", evolve:"Matriz ética de impacto para IA em políticas públicas" },
+  { axis:"E5", comp:"Advocacy em direitos digitais e diversidade", level:"Intermediário", evidence:"EGD/ITS/Data Privacy; participação em redes e fóruns", evolve:"Rede de pesquisa e participação em fóruns internacionais" }
+];
+
+// Axis filter UI
+const axisBar = document.getElementById("axisBar");
+axes.forEach(a => {
+  const el = document.createElement("button");
+  el.className="pill";
+  el.dataset.axis=a.id;
+  el.textContent = a.name;
+  axisBar.appendChild(el);
+});
+let activeAxes = new Set(axes.map(a=>a.id));
+axisBar.addEventListener("click", (e)=>{
+  const btn = e.target.closest(".pill");
+  if(!btn) return;
+  const id = btn.dataset.axis;
+  if(activeAxes.has(id)){ activeAxes.delete(id); } else { activeAxes.add(id); }
+  syncAxisButtons(); render();
+});
+function syncAxisButtons(){
+  document.querySelectorAll(".pill").forEach(b=>{
+    b.classList.toggle("active", activeAxes.has(b.dataset.axis));
+  });
+}
+syncAxisButtons();
+
+// Search
+const q = document.getElementById("q");
+q.addEventListener("input", render);
+
+// Reset
+document.getElementById("reset").addEventListener("click", ()=>{
+  activeAxes = new Set(axes.map(a=>a.id));
+  q.value = "";
+  syncAxisButtons();
+  render();
+});
+
+// Export CSV
+document.getElementById("export").addEventListener("click", ()=>{
+  const rows = getVisible().map(x => ({
+    Eixo: axes.find(a=>a.id===x.axis)?.name || x.axis,
+    Competencia: x.comp,
+    Nivel: x.level,
+    Evidencia: x.evidence,
+    Evolucao: x.evolve
+  }));
+  const csv = toCSV(rows);
+  const url = URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8;"}));
+  const a = document.createElement("a");
+  a.href = url; a.download = "Matriz_Competencias_Maira_Tema_Claro.csv";
+  document.body.appendChild(a); a.click();
+  setTimeout(()=>{ URL.revokeObjectURL(url); a.remove(); }, 500);
+});
+function toCSV(rows){
+  if(!rows.length) return "";
+  const headers = Object.keys(rows[0]);
+  const esc = v => `"${String(v).replace(/"/g,'""')}"`;
+  return [headers.join(","), ...rows.map(r=>headers.map(h=>esc(r[h]??"")).join(","))].join("\n");
+}
+function getVisible(){
+  const term = q.value.trim().toLowerCase();
+  return items.filter(it => activeAxes.has(it.axis))
+              .filter(it => !term || (it.comp.toLowerCase().includes(term) ||
+                                      it.evidence.toLowerCase().includes(term) ||
+                                      it.evolve.toLowerCase().includes(term)));
+}
+const grid = document.getElementById("grid");
+function card(it){
+  const axisMeta = axes.find(a=>a.id===it.axis) || {name:it.axis, color:"var(--blue)"};
+  const lvl = levelMap[it.level] || levelMap["Em desenvolvimento"];
+  const wrapper = document.createElement("div");
+  wrapper.className="card";
+  wrapper.innerHTML = `
+    <div class="axisTag">
+      <span class="axisDot" style="background:${axisMeta.color}"></span>
+      <span>${axisMeta.name}</span>
+    </div>
+    <div class="title">${it.comp}</div>
+    <div class="evidence"><strong>Nível:</strong> ${lvl.emoji} ${it.level}</div>
+    <div class="evidence"><strong>Evidência:</strong> ${it.evidence}</div>
+    <div class="row">
+      <div class="badge">Evolução 2026</div>
+      <div class="meter"><div class="fill" style="width:${Math.round(lvl.pct*100)}%; background:${lvl.color}"></div></div>
+    </div>
+    <div class="evidence" style="margin-top:8px"><strong>Próximo passo:</strong> ${it.evolve}</div>
+  `;
+  return wrapper;
+}
+function render(){
+  grid.innerHTML = "";
+  const vis = getVisible();
+  if(!vis.length){
+    const empty = document.createElement("div");
+    empty.className="card";
+    empty.innerHTML = `<div class="title">Nenhum resultado</div>
+                       <div class="evidence">Ajuste os filtros ou limpe a busca.</div>`;
+    grid.appendChild(empty);
+    return;
+  }
+  vis.forEach(v => grid.appendChild(card(v)));
+}
+render();
+</script>
+</body>
+</html>
